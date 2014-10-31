@@ -19,6 +19,8 @@
  *
  */
 
+#include <sys/socket.h>
+#include <sys/types.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdio.h>
@@ -49,9 +51,21 @@ void do_fork_exec(const char *cmdline, int *pid, int *stdin_fd, int *stdout_fd,
 {
 	int inpipe[2], outpipe[2], errpipe[2];
 
-	if (pipe(inpipe) || pipe(outpipe) || (stderr_fd && pipe(errpipe))) {
-		perror("pipe");
-		exit(1);
+	if (!stdout_fd) {
+		/* when no stdout_fd requested, use one socket for both stdin and stdout */
+		/* currently used only by qrexec-agent */
+		if (socketpair(AF_UNIX, SOCK_STREAM, 0, inpipe) || (stderr_fd && socketpair(AF_UNIX, SOCK_STREAM, 0, errpipe))) {
+			perror("socketpair");
+			exit(1);
+		}
+		outpipe[0] = inpipe[1];
+		outpipe[1] = inpipe[0];
+	} else {
+		/* left for compatibility and for qrexec-daemon */
+		if (pipe(inpipe) || pipe(outpipe) || (stderr_fd && pipe(errpipe))) {
+			perror("pipe");
+			exit(1);
+		}
 	}
 	switch (*pid = fork()) {
 	case -1:
@@ -69,9 +83,11 @@ void do_fork_exec(const char *cmdline, int *pid, int *stdin_fd, int *stdout_fd,
 	default:;
 	}
 	close(inpipe[0]);
-	close(outpipe[1]);
 	*stdin_fd = inpipe[1];
-	*stdout_fd = outpipe[0];
+	if (stdout_fd) {
+		close(outpipe[1]);
+		*stdout_fd = outpipe[0];
+	}
 	if (stderr_fd) {
 		close(errpipe[1]);
 		*stderr_fd = errpipe[0];
