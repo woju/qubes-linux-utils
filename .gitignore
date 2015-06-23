@@ -2,4 +2,3 @@ rpm/
 deb/
 *~
 *.o
-*.py[co]
