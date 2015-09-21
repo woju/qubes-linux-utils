@@ -17,13 +17,13 @@ rpms:
 all:
 	$(MAKE) -C qrexec-lib all
 	$(MAKE) -C qmemman all
-	$(MAKE) -C core all
+	$(MAKE) -C imgconverter all
 
 install:
 	$(MAKE) -C udev install
 	$(MAKE) -C qrexec-lib install
 	$(MAKE) -C qmemman install
-	$(MAKE) -C core install
+	$(MAKE) -C imgconverter install
 
 install-fedora-kernel-support:
 	$(MAKE) -C dracut install
@@ -39,4 +39,4 @@ install-debian-kernel-support:
 clean:
 	$(MAKE) -C qrexec-lib clean
 	$(MAKE) -C qmemman clean
-	$(MAKE) -C core clean
+	$(MAKE) -C imgconverter clean
