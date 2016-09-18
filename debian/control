@@ -2,7 +2,13 @@ Source: qubes-utils
 Section: admin
 Priority: extra
 Maintainer: Davíð Steinn Geirsson <david@dsg.is>
-Build-Depends: libvchan-xen-dev, libxen-dev, debhelper (>= 9.0.0), dh-systemd, dkms, python-setuptools
+Build-Depends:
+ libvchan-xen-dev,
+ libxen-dev,
+ debhelper (>= 9.0.0),
+ dh-systemd,
+ dkms,
+ python-setuptools
 Standards-Version: 3.9.3
 Homepage: http://www.qubes-os.org
 Vcs-Git: http://dsg.is/qubes/qubes-linux-utils.git
